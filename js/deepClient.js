@@ -34,7 +34,8 @@ var ComponentService =
 	deep_url:"",
     cache:[],
 
-    getComponent: function(params) {
+    getComponent: function(params)
+    {
         var request = this.getXMLHttpRequest();
         var component = params.component;
         var cache = this.cache;
@@ -62,7 +63,7 @@ var ComponentService =
             var datalet_code = '<' + params.component;
             var keys = Object.keys(params.params);
             for (var i = 0; i < keys.length; i++) {
-                datalet_code += ' ' + keys[i] + '=\'' + params.params[keys[i]].toString().replace(/\'/g, "&#39;") + '\'';
+                datalet_code += create_attribute(keys[i], params.params[keys[i]]);
             }
 
             datalet_code += "></" + params.component + ">";
@@ -71,10 +72,15 @@ var ComponentService =
                 $("#" + params.placeHolder).html(datalet_code);/*Injection from a static web page*/
         };
 
-        //if (!this.isRegistered(component))
+        var create_attribute = function(key, val)
+        {
+            val = (typeof val === 'object' ? JSON.stringify(val) : val).toString().replace(/\'/g, "&#39;");
+            //val = encodeURIComponent(typeof val === 'object' ? JSON.stringify(val) : val);
+            return ` ${key} = '${val}'`;
+        };
+
         if (!cache[this.deep_url + component])
         {
-            //console.log('ciao');
             request.open('GET', this.deep_url + component);
             request.send();
             cache[this.deep_url + component] = true;
@@ -100,7 +106,8 @@ var ComponentService =
         }
     },
 
-    isRegistered: function(name) {
+    isRegistered: function(name)
+    {
         //return document.createElement(name).constructor !== HTMLElement;
 
         try {
@@ -109,6 +116,5 @@ var ComponentService =
         } catch(e) {
             return true;
         }
-
     }
 };
